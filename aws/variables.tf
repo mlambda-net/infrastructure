@@ -37,6 +37,15 @@ variable "domain_name" {
   type = string
 }
 
+variable "cert_issuer" {
+  type = string
+  default = "https://acme-staging-v02.api.letsencrypt.org/directory"
+}
+
+variable "private_domain" {
+  type = string
+}
+
 variable "image_id" {
   type = string
   default = "ami-02354e95b39ca8dec"
@@ -64,3 +73,4 @@ variable "vpc_private_cidr" {
   type        = string
   default     = ""
 }
+

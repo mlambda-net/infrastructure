@@ -5,3 +5,6 @@
 aws/build
 *.tfstate
 *.tfstate.backup
+aws/.terraform.tfstate.lock.info
+
+aws/crash.log

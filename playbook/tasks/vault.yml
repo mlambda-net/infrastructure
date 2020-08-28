@@ -1,0 +1,40 @@
+---
+- name: Add an Apt signing key, vault
+  apt_key:
+    url: https://apt.releases.hashicorp.com/gpg
+    state: present
+
+- apt_repository:
+    repo: deb [arch=amd64] https://apt.releases.hashicorp.com bionic main
+    state: present
+
+- name: Upgrade all packages to the latest version
+  apt:
+    name: "*"
+    state: latest
+
+- name: Install dependencies
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - vault
+
+- name: Create vault config directory
+  file: state=directory path=/etc/opt/vault/
+  become: true
+
+- name: Copy vault config to server
+  become: true
+  copy: src=config/vault/config.hcl dest=/etc/opt/vault/
+
+- name: Copy vault service to server
+  become: true
+  copy: src=config/vault/vault.service dest=/usr/lib/systemd/system/vault.service
+
+- name: Start vault service
+  become: true
+  systemd:
+    state: started
+    name: vault
+    daemon_reload: yes

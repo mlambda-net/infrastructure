@@ -1,12 +1,58 @@
-- name: download the open vpn
-  run: once
-  shell:
-    cmd: wget https://git.io/vpn -O openvpn-install.sh
-    creates: vpn
-    chdir: /tmp/vpn
+# open vpn tasks
 
-- name: install the open vpn
-  run: once
-  shell:
-    cmd: chmod +x openvpn-install.sh & ./openvpn-install.sh
-    chdir: /tmp/vpn
+
+- name: Add an Apt signing key, open vpn
+  apt_key:
+    url: https://as-repository.openvpn.net/as-repo-public.gpg
+    state: present
+
+- apt_repository:
+    repo: deb http://as-repository.openvpn.net/as/debian bionic main
+    state: present
+
+- apt_repository:
+    repo: ppa:certbot/certbot
+    state: present
+
+- name: Upgrade all packages to the latest version
+  apt:
+    name: "*"
+    state: latest
+
+- name: Install dependencies
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - openvpn-as
+    - ca-certificates
+    - net-tools
+    - gnupg
+    - certbot
+
+
+
+- name: creating the certificates
+  become: true
+  command: certbot certonly --standalone --noninteractive  --email admin@mlambda.net --agree-tos --preferred-challenges=http -d vpn-dev.mlambda.net --server https://acme-staging-v02.api.letsencrypt.org/directory
+
+- name: register the private key
+  command: /usr/local/openvpn_as/scripts/sacli --key "cs.priv_key" --value_file "/etc/letsencrypt/live/vpn-dev.mlambda.net/privkey.pem" ConfigPut
+
+- name: register the private key
+  command: /usr/local/openvpn_as/scripts/sacli --key "cs.cert" --value_file "/etc/letsencrypt/live/vpn-dev.mlambda.net/fullchain.pem" ConfigPut
+
+- name: change name
+  command: /usr/local/openvpn_as/scripts/sacli --key "host.name" --value "vpn-dev.mlambda.net" ConfigPut
+
+- name: add public ip
+  command: /usr/local/openvpn_as/scripts/sacli --key "vpn.server.routing.private_network.0" --value "100.0.1.0/24" ConfigPut
+
+- name: add private ip
+  command: /usr/local/openvpn_as/scripts/sacli --key "vpn.server.routing.private_network.1" --value "100.0.2.0/24" ConfigPut
+
+- name: add network ip
+  command: /usr/local/openvpn_as/scripts/sacli --key "vpn.daemon.0.client.network" --value "10.0.0.0" ConfigPut
+
+- name: restart sacli
+  command: /usr/local/openvpn_as/scripts/sacli start

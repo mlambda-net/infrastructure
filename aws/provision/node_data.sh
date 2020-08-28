@@ -18,4 +18,4 @@ function setup() {
   sudo ansible-playbook "$playbook"
 }
 
-setup "https://github.com/mlambda-net/infrastructure.git" "infrastructure/playbook" "master.yml"
+setup "https://github.com/mlambda-net/infrastructure.git" "infrastructure/playbook" "node.yml"

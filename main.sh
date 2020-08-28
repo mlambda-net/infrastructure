@@ -8,12 +8,29 @@ source ./scripts/aws_deploy.sh
 
 
 case $1 in
-  dev)
-    echo "Releasing dev environment"
-    deploy_aws "env/dev.tfvars" -var=env=dev
+  deploy)
+    case $2 in
+      dev)
+        echo "Releasing dev environment"
+        deploy_aws "env/dev.tfvars" -var=env=dev
+        ;;
+      stg)
+        ;;
+      prod)
+        ;;
+    esac
     ;;
-  stg)
-    ;;
-  prod)
+  delete)
+    case $2 in
+      dev)
+        echo "Releasing dev environment"
+        delete_aws "env/dev.tfvars" -var=env=dev
+        ;;
+      stg)
+        ;;
+      prod)
+        ;;
+    esac
     ;;
 esac
+

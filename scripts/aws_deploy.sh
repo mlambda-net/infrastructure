@@ -15,3 +15,14 @@ deploy_aws () {
 
   popd
 }
+
+
+delete_aws() {
+  pushd ./aws
+
+  terraform init -input=false
+  terraform plan -destroy -var-file=$1 $2 -out=./build/tfplan
+  terraform apply -auto-approve build/tfplan
+
+  popd
+}

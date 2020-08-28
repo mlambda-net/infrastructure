@@ -9,7 +9,7 @@ resource "aws_launch_configuration" "master" {
   placement_tenancy = "default"
   user_data = file("${path.module}/provision/master_data.sh")
   root_block_device {
-    volume_size = "30"
+    volume_size = "20"
     volume_type = "gp2"
     delete_on_termination = true
   }
