@@ -1,0 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+
+.idea
+.terraform
+aws/build
+*.tfstate
+*.tfstate.backup
