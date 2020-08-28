@@ -1,0 +1,12 @@
+- name: download the open vpn
+  run: once
+  shell:
+    cmd: wget https://git.io/vpn -O openvpn-install.sh
+    creates: vpn
+    chdir: /tmp/vpn
+
+- name: install the open vpn
+  run: once
+  shell:
+    cmd: chmod +x openvpn-install.sh & ./openvpn-install.sh
+    chdir: /tmp/vpn
